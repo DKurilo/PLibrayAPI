@@ -53,7 +53,7 @@ ALTER TABLE public.account_book OWNER TO library;
 
 CREATE TABLE public.book (
     book_id integer NOT NULL,
-    isbn character varying(13) NOT NULL
+    isbn character varying(30) NOT NULL
 );
 
 

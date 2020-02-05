@@ -8,4 +8,4 @@
 # docker cp ./cert.pem dkurilo/library-api:/var/build/cert.pem
 
 # Run container
-docker run -t -i -e POSTGRES_CONN=$POSTGRES_CONN --name LibraryAPI dkurilo/library-api
+docker run -t -i -e POSTGRES_CONN="postgresql://library@localhost/library" --name LibraryAPI dkurilo/library-api
