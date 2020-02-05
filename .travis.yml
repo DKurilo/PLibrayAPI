@@ -13,8 +13,8 @@ addons:
     - libgmp-dev
 env:
   global:
-  - secure: UMPN12eckx5U6UEWWcRf8uWP2pk/pAIkuCBoyOVUNZOK9j5CVK0tvJmh7w3uGCsi1KnxdBa9DBUujVPmMvIxOMPyL3CMk9QITkvZzrUHJlvC+BPS6PNiEh15ryuX1RZ7DnOk/umdzxwQfjHo1qcMLmAok+srxTr7xRsTum7v/3rcga/m9RnBOrAG4h0h9VSniXlAuDdpEAl+5x59XrB66e3Prhg4Ld75xKUxYZ6eji6vNdWCUuV/BKdsThdZcyTZIe3p374o384Kb29lvpqBsmZyB3yTe6lGrE/FuiqDVmREkNkztCcnOsXJPtN1t0TQxhhbJYyq6fIsy+6hDC8IDUzRX1xvQUJE9fFEhRec/vaEXBIdVCJjpJCfuGfRN1KDy938QqMG1X9vxfdMFAeJ2MtKhy6zxF/3rZmcbonK1GhwyyjD7TtWF19dtyJNb4rMgd6DK6EAXwq1/PKjICqztKVOtdRDeDgDYVdAU9n4oVpwupOwUlrW+y04Vu4UWOUnxY8oIDTZ+RkynQMXWQtRvDXqlgh326ymCFUteknJU2Rvt5GRyMeJYn/bVNSGq40nJVc1RySYJTbG7fV/ZlmMXlCq3QhVfSt1J45kxajRDxa29i1QrKRWvgXMQjhlW8w7iIX29Iwjt/HVRa6ceoZ1Ex7w+rC8qJfUUtjuwBzKSmg=
-  - secure: hH9i84Ntc2Es1v1/mNX5MDN7F4z96l5n8mb9FMBQuxbTqsXDJNo6jQH9fTUhl+beTJe/o+7r7Cm41MsARd2V6iep354XzB5d3HFUs6839i4/61MhCXKhy3CQYtN9MKYAMsmaXw0xKt+V2374+fY+duDWr89TUD6DP4QGZq0iSD3q6mpu+/2CsJrhHFAbfB+pDZ16Ga29C09j2YR+G3vYLeYwEvCiZqN6hyTPrdzpyK4ZzC8rWHni3jnlzXF+Qi0/8QI0GTsrTtlr9EPBOFRJJ1ROQzHsWEstH6lgErJtCayXXeIRAz4cIlJ9TXo5XRYUPV8dNuYfhlWYWFIjOGXpOHngR8CpzMw3SKUFq+sx0kDX6ivDpSwreKVjtJ0WJQIFy2B/JHm4wdtobrMVU2OT/8+78bldsaeuzlyC47iYlzuneyKp9AZagyZwndtf56+yuNzgCYnPQjjxCM6tWXwH9vjzFOf98mSCxiKsLYReDnbiol7R9qasqoPggfoW5HLRMtyBBHngyaI8wHx+C/jkO0AneJalZxO5i61XF+jJfZkkDvBj2zn/asIps7xpU5vSpDTmeLpmtIHEbNEEZuGoautjDh8MAbxpT1P9QoZ3TT+rJMBJSqjF8h/hgUIfZxZJLB9xVLoTDprvmEBkgXc15+J/o7J0PX5+tBDj5+YP2AA=
+  - secure: Kcw0OzIRh9bP7+jelVt0/c+OgSHYhRhCfy/dRhyq0uYfShrP8P9EE0y4tbnBj0uEUbefl1e3mxwbtPD/EppUTuSPlHa1pCH223rwLSTHaAJMm/Nt+H3pdTq299dUQgVg7hodPr9XL1H/bPQWNcE/d+VY1dFVXwDTSYjFwg1DImFiL2DULb2OxD05lm7Ezry7TFQyrjiYczzDAfAcUDPpuPyR/vV1faKeLnIGlZcl40whm3vgZ2boi8R9FzBzGntB0yQu3BIU6ZmPLnZ7GzjBJMNsslOeqyKHa9q3MHezrj4E2AQiV6hKV7cxHQn4Sv+FAFA1vrpPTRegFLINbbcmdC+8K9Du1q8d5ryaEhaMsohoIs0b6CRdYZUO38WCVjz8gdWAe7A5J1EGvNq0gY1xjD6Bmvcvo1Y2WeaPaeHYWUAQM7YgaGdMKpmuz7NN9qDRu9E5fQQhRBAfwVLClLJltvNuOL2TiP98KNKz2y9huIrLt+8xhptiA+LNefrpEgKvqNlvyv3jMx1k4WbkZmhj6+0kPthcJsinVGhDFfGzcIiuMJ4TA4hbLqw8Xk/bsCov1q8rI9DjqKyNpTOzdiqe35bNSMDO0hD5XZ0FdU2zjgq0Ne4kSm2Y6KpGCRtefRj5InOMu9E3BHVKhSXiOqjFPR+dpYofKor1h3sSg1lfRRY=
+  - secure: wYLvrnPmv1oVvZzCvGQE/bBNAfySB81ZY3diU6XHLf8pM4olTfeE5y39YMUkLrs/HK/rM/BmBG7VKx1/FF0Pgwbv3j6w+HXdBaC8YFekaFMMaUCaWP0rDOa2PiFCqUhjf/lp0unoQaTEaCD9B+6D5SjCDRX++x+fG1VMr77xo1jE0WG0LdDq4JJMslg2tO2hqNCdQTOlVcKPToSntZjDXTCgABL53UFoFmlQEq+XiRW5BTSwBMvyPHgBnqaBqSSWn58IxrPI6BsC8reqJFnBQer6b9HsKqbQbqIa09mncAnrgTLL9LK4eBmUDJh3/vJA9siN92/KKuZkUD6RUzPlptgmDVHCV6IDlDluh6EGvXJyJP8czl9hYzM8y+475XAiujh+3RxMWCeigN6JbeBvPzM+pwrd0IkKmXhsEbLP1eD8lkXvt+CAFz5bgCeetYqgulKXjR6kkxUtd3E+NvWlGfZQGAwFbEPduy9fdFDKMndYJ8uDRwbyhzjkAPOp10hXGje1geiutL0096TwWdPW6WDToAw2YTDMSzIIerSccykEst5WogeYFK74dN1bAsltCqhGgEi2867RXNkQx2O4Axi5XZkh9vS2jtsOllf+2a63+Io3DnHUCEPyRfUy8QkRHbri4o8mh5cod1NGw+DrzXcCJGusLUEPrWI7AbKE5sU=
 jobs:
   include:
   - stage: Install Stack
@@ -42,8 +42,10 @@ jobs:
     - stack build --local-bin-path ./deploy/bin/ --copy-bins
     - cd ./deploy
     - docker build -t dkurilo/library-api .
-deploy:
-  provider: script
-  script: bash ./deploy/docker_push
-  on:
-    branch: master
+    on:
+      branch: master
+  - stage: Push Docker Image
+    provider: script
+    script: bash ./deploy/docker_push
+    on:
+      branch: master

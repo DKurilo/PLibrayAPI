@@ -31,20 +31,20 @@ Project should use github as VCS and travis-ci to run tests and build docker ima
 
 ## Database structure
 
-*Users*
-ID
-Role
-Authtoken
+*account*
+user_id
+role
+token
 
-*Books*
-ID
+*book*
+book_id
 ISBN
 
-*UserBook*
-ID
-UserID
-BookID
-CheckDate
-Term
+*account_book*
+id
+user_id
+book_id
+check_date
+term
 
 
