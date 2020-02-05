@@ -31,20 +31,24 @@ Project should use github as VCS and travis-ci to run tests and build docker ima
 
 ## Database structure
 
-*account*
-user_id
-role
-token
+*account*  
+user_id  
+role  
+token  
+  
+*book*  
+book_id  
+ISBN  
+  
+*account_book*  
+id  
+user_id  
+book_id  
+check_date  
+term  
 
-*book*
-book_id
-ISBN
+## Request examples (before I will have better documentation)
 
-*account_book*
-id
-user_id
-book_id
-check_date
-term
-
-
+curl -X GET "https://127.0.0.1:8080/api/v1/health" -H "Content-Type: application/json" -k -v  
+curl -X POST "https://127.0.0.1:8080/api/v1/librarian/books" -H "Content-Type: application/json" --data-binary '"0-306-40615-2"' -k -v  
+curl -X DELETE "https://127.0.0.1:8080/api/v1/librarian/books" -H "Content-Type: application/json" --data-binary '"0-306-40615-2"' -k -v  

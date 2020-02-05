@@ -89,8 +89,11 @@ data Book = Book { id   :: Int
 
 $(deriveJSON defaultOptions ''Book)
 
+type BookId = Int
+
 type API = "api" :> "v1" :> "health" :> Get '[JSON] String
       :<|> "api" :> "v1" :> "librarian" :> "books" :> ReqBody '[JSON] PostBook :> PostCreated '[JSON] Book
+      :<|> "api" :> "v1" :> "librarian" :> "books" :> ReqBody '[JSON] PostBook :> DeleteAccepted '[JSON] BookId
 
 startApp :: IO ()
 startApp = do
@@ -112,6 +115,7 @@ api = Proxy
 server :: Pool Connection -> Server API
 server conns = health
           :<|> createBook conns
+          :<|> deleteBook conns
 
 createBook :: Pool Connection -> PostBook -> Handler Book
 createBook conns (PostBook postISBN) = case postISBN of
@@ -127,6 +131,21 @@ createBook conns (PostBook postISBN) = case postISBN of
                 Only uid : _ -> return $ Book uid postISBN
     where wrongISBN400Err = err400 { errBody = "Wrong ISBN" }
           db500Err = err500 { errBody = "Failed to create book" }
+
+deleteBook :: Pool Connection -> PostBook -> Handler Int
+deleteBook conns (PostBook postISBN) = case postISBN of
+    WrongISBN -> throwError wrongISBN400Err
+    _ -> do
+            rows <- liftIO $ withResource conns $ \conn -> query conn [sql|
+                DELETE FROM book
+                WHERE book_id = (SELECT book_id FROM book WHERE ISBN = ? AND book_id NOT IN (SELECT book_id FROM account_book) LIMIT 1)
+                RETURNING book_id
+                |] (Only . isbnToString $ postISBN)
+            case rows of
+                []           -> throwError db404Err
+                Only uid : _ -> return uid
+    where wrongISBN400Err = err400 { errBody = "Wrong ISBN" }
+          db404Err = err500 { errBody = "Can't delete book" }
 
 health :: Handler String
 health = liftIO $ show . (round . (* 1000)) <$> getPOSIXTime
