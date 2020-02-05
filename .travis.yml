@@ -1,0 +1,52 @@
+# https://docs.haskellstack.org/en/stable/travis_ci/
+
+dist: bionic
+
+services:
+  - docker
+
+cache:
+  directories:
+  - $HOME/.local/bin
+  - $HOME/.stack
+  - $TRAVIS_BUILD_DIR/.stack-work
+
+addons:
+  apt:
+    update: true
+    packages:
+      - libgmp-dev
+env:
+
+jobs:
+  include:
+    - stage: Install Stack
+      script:
+        - export DIR=~/.local/bin
+        - if [ ! -d "$DIR" ]; then mkdir -p ~/.local/bin; fi
+        - export PATH=$HOME/.local/bin:$PATH
+        - travis_retry curl -L https://get.haskellstack.org/stable/linux-x86_64.tar.gz | tar xz --wildcards --strip-components=1 -C ~/.local/bin '*/stack'
+        - stack setup
+    - stage: Build dependencies
+      script:
+        - export PATH=$HOME/.local/bin:$PATH
+        - stack build --dependencies-only
+    - stage: Build Backend
+      script:
+        - export PATH=$HOME/.local/bin:$PATH
+        - stack build
+    - stage: Test Backend
+      script:
+        - export PATH=$HOME/.local/bin:$PATH
+        - stack test
+    - stage: Build Docker image
+      script:
+        - stack build --local-bin-path ./deploy/bin/ --copy-bins
+        - cd ./deploy
+        - docker build -t dkurilo/library-api .
+
+deploy:
+  provider: script
+  script: bash ./deploy/docker_push
+  on:
+    branch: master

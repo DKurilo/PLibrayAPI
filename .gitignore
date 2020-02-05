@@ -1,0 +1,4 @@
+.DS_Store
+.stack-work
+stack.yaml.lock
+/deploy/bin/library-api-exe
