@@ -10,6 +10,7 @@
 module Lib
     ( startApp
     , app
+    , initConnectionPool
     ) where
 
 import           Control.Monad
