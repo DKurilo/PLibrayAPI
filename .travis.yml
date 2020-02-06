@@ -19,6 +19,7 @@ jobs:
   include:
   - stage: Install Stack
     script:
+    - echo "$DOCKER_PASSWORD" | docker login --username $DOCKER_USERNAME --password-stdin
     - export DIR=~/.local/bin
     - if [ ! -d "$DIR" ]; then mkdir -p ~/.local/bin; fi
     - export PATH=$HOME/.local/bin:$PATH
@@ -42,6 +43,6 @@ jobs:
     - stack build --local-bin-path ./deploy/bin/ --copy-bins
     - cd ./deploy
     - docker build -t dkurilo/library-api .
-    - "./docker_push"
+    - ./docker_push
     on:
       branch: master

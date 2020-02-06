@@ -113,8 +113,6 @@ COPY public.account_book (user_id, book_id, check_date, end_date) FROM stdin;
 --
 
 COPY public.book (book_id, isbn) FROM stdin;
-2	0-306-40615-2
-3	1-306-40615-3
 \.
 
 
@@ -122,7 +120,7 @@ COPY public.book (book_id, isbn) FROM stdin;
 -- Name: book_book_id_seq; Type: SEQUENCE SET; Schema: public; Owner: library
 --
 
-SELECT pg_catalog.setval('public.book_book_id_seq', 3, true);
+SELECT pg_catalog.setval('public.book_book_id_seq', 0, true);
 
 
 --

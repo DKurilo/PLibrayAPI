@@ -119,3 +119,5 @@ type API = "api" :> "v1" :> "health" :> Get '[JSON] String
       :<|> "api" :> "v1" :> "librarian" :> "books" :> AuthProtect "librarian" :> ReqBody '[JSON] PostBook :> DeleteAccepted '[JSON] BookId
       :<|> "api" :> "v1" :> "librarian" :> "books" :> "overdue" :> AuthProtect "librarian" :> Get '[JSON] [OverdueBook]
       :<|> "api" :> "v1" :> "user" :> "books" :> AuthProtect "user" :> Get '[JSON] [CheckedOutBook]
+      :<|> "api" :> "v1" :> "user" :> "books" :> AuthProtect "user" :> ReqBody '[JSON] PostBook :> PostCreated '[JSON] CheckedOutBook
+      :<|> "api" :> "v1" :> "user" :> "books" :> AuthProtect "user" :> ReqBody '[JSON] PostBook :> DeleteAccepted '[JSON] BookId
