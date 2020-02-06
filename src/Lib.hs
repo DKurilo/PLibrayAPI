@@ -11,6 +11,7 @@ module Lib
     ( startApp
     , app
     , initConnectionPool
+    , getConnectionString
     ) where
 
 import           Control.Monad
@@ -48,14 +49,18 @@ initConnectionPool connStr =
 
 startApp :: IO ()
 startApp = do
-    envConnStr <- lookupEnv "POSTGRES_CONN"
-    let connStr = case envConnStr of
-                      Just cs -> (encodeUtf8 . pack) cs
-                      _       -> ""
+    connStr <- getConnectionString
     pool <- initConnectionPool connStr
     runTLS tlsOpts warpOpts (app pool)
     where tlsOpts = tlsSettings "cert.pem" "key.pem"
           warpOpts = setPort 8080 defaultSettings
+
+getConnectionString :: IO DBConnectionString
+getConnectionString = do
+    envConnStr <- lookupEnv "POSTGRES_CONN"
+    return $ case envConnStr of
+                 Just cs -> (encodeUtf8 . pack) cs
+                 _       -> ""
 
 app :: Pool Connection -> Application
 app pool = serveWithContext api (genAuthServerContext pool) (server pool)

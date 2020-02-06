@@ -44,9 +44,12 @@ test-suite library-api-test
   main-is:             Spec.hs
   build-depends:       base
                      , library-api
+                     , bytestring
+                     , http-types
                      , hspec
                      , hspec-wai
                      , hspec-wai-json
+                     , wai-extra
                      , aeson
                      , postgresql-simple
                      , resource-pool

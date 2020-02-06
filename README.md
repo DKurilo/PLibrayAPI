@@ -54,7 +54,8 @@ term
 ### Authentication
 
 To autheticate use header `Auth-Token`. As header value use account token.  
-In case user with token not found or user with such role don't have access, 403 status returns with message `Invalid Token`.
+In case user with token not found or user with such role don't have access, 403 status will be returned with message `Invalid Token`.
+In case token is awaiting, but there is no token, 401 will be returned.
 
 ### GET /api/v1/health
 
