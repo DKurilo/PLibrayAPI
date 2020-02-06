@@ -68,6 +68,7 @@ server conns = health
           :<|> createBook conns
           :<|> deleteBook conns
           :<|> overdueBooks conns
+          :<|> checkedOutBooks conns
 
 createBook :: Pool Connection -> AuthLibrarian -> PostBook -> Handler Book
 createBook conns _ (PostBook postISBN) = case postISBN of
@@ -112,6 +113,21 @@ overdueBooks conns _ = do
                 WHERE date_trunc('day', now()) > date_trunc('day', account_book.end_date)
                 |]
     return $ map (\(bid, bookISBN, days, uid) -> OverdueBook bid (isbnFromString bookISBN) days uid) rows
+
+checkedOutBooks :: Pool Connection -> AuthUser -> Handler [CheckedOutBook]
+checkedOutBooks conns au = do
+    rows <- liftIO $ withResource conns $ \conn -> query conn [sql|
+                SELECT book.book_id,
+                       book.ISBN,
+                       account_book.check_date,
+                       account_book.end_date,
+                       EXTRACT(epoch from date_trunc('day', account_book.end_date) - date_trunc('day', now())) / 3600 / 24
+                FROM  account_book
+                INNER JOIN book
+                ON account_book.book_id = book.book_id
+                WHERE account_book.user_id = ?
+                |] ((Only . unAuthUser) au)
+    return $ map (\(bid, bookISBN, coDate, eDate, days) -> CheckedOutBook bid (isbnFromString bookISBN) coDate eDate days) rows
 
 health :: Handler String
 health = liftIO $ show . (round . (* 1000)) <$> getPOSIXTime

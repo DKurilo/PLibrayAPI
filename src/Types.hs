@@ -14,6 +14,7 @@ module Types
     , ISBN (..), isbnFromString, isbnToString
     , PostBook (..)
     , OverdueBook (..)
+    , CheckedOutBook (..)
     , Book (..)
     , BookId (..)
     , API (..)
@@ -29,6 +30,7 @@ import           Data.ByteString                  (ByteString)
 import           Data.Char                        (isDigit)
 import           Data.Text                        (Text, pack, unpack)
 import           Data.Text.Encoding               (encodeUtf8)
+import           Data.Time                        (LocalTime)
 import           Servant
 import           Servant.Server.Experimental.Auth (AuthHandler, AuthServerData,
                                                    mkAuthHandler)
@@ -90,6 +92,21 @@ instance ToJSON OverdueBook where
                        , "user" .= (show . obuser) ob
                        ]
 
+data CheckedOutBook = CheckedOutBook { cobid       :: Int
+                                     , cobisbn     :: ISBN
+                                     , cobcodate   :: LocalTime
+                                     , cobedate    :: LocalTime
+                                     , cobdaysLeft :: Int
+                                     }
+
+instance ToJSON CheckedOutBook where
+    toJSON ob = object [ "id" .= (show . cobid) ob
+                       , "isbn" .= (show . cobisbn) ob
+                       , "checkoutDate" .= (show . cobcodate) ob
+                       , "endDate" .= (show . cobedate) ob
+                       , "daysLeft" .= (show . cobdaysLeft) ob
+                       ]
+
 type BookId = Int
 
 newtype AuthUser = AuthUser { unAuthUser :: Int }
@@ -101,3 +118,4 @@ type API = "api" :> "v1" :> "health" :> Get '[JSON] String
       :<|> "api" :> "v1" :> "librarian" :> "books" :> AuthProtect "librarian" :> ReqBody '[JSON] PostBook :> PostCreated '[JSON] Book
       :<|> "api" :> "v1" :> "librarian" :> "books" :> AuthProtect "librarian" :> ReqBody '[JSON] PostBook :> DeleteAccepted '[JSON] BookId
       :<|> "api" :> "v1" :> "librarian" :> "books" :> "overdue" :> AuthProtect "librarian" :> Get '[JSON] [OverdueBook]
+      :<|> "api" :> "v1" :> "user" :> "books" :> AuthProtect "user" :> Get '[JSON] [CheckedOutBook]
