@@ -56,3 +56,44 @@ curl -X GET "https://127.0.0.1:8080/api/v1/librarian/books/overdue" -H "Content-
 curl -X GET "https://127.0.0.1:8080/api/v1/user/books" -H "Content-Type: application/json" -H "Auth-Token: 2" -k -v  
 curl -X POST "https://127.0.0.1:8080/api/v1/user/books" -H "Content-Type: application/json" -H "Auth-Token: 2" --data-binary '"0-306-40615-2"' -k -v  
 curl -X DELETE "https://127.0.0.1:8080/api/v1/user/books" -H "Content-Type: application/json" -H "Auth-Token: 2" --data-binary '"0-306-40615-2"' -k -v  
+
+## CI/CD
+
+Project uses travis-ci.org to make build project, make tests and push docker image into docker hub.  
+
+## How to run
+
+### Database
+
+Install postgersql (or use postgresql docker image).  
+Initialize database with scripts from `db/`.  
+`init.sql` creates databse library and user library without password. You can change it.  
+`dump.sql` creates tables and users in database.  
+
+### With Docker
+
+```
+docker pull dkurilo/library-api
+docker run -t -i -d -e POSTGRES_CONN="postgresql://library@host.docker.internal/library" -p 8080:8080 dkurilo/library-api
+```
+
+### Build locally from sorce
+
+Install stack: https://docs.haskellstack.org/en/stable/README/  
+Build project with  
+
+```
+stack build
+```
+
+Start project
+
+```
+POSTGRES_CONN="postgresql://library@localhost/library" stack run library-api-exe
+```
+
+To run test
+
+```
+stack test
+```
