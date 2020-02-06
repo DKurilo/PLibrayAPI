@@ -297,8 +297,8 @@ Project uses travis-ci.org to make build project, make tests and push docker ima
 
 Install postgersql (or use postgresql docker image).  
 Initialize database with scripts from `db/`.  
-`init.sql` creates databse library and user library without password. You can change it.  
-`dump.sql` creates tables and users in database.  
+`empty-init.sql` creates databse library and user library without password. You can change it.  
+`empty-dump.sql` creates tables and users in database.  
 
 ### With Docker
 
@@ -324,6 +324,8 @@ POSTGRES_CONN="postgresql://library@localhost/library" stack run library-api-exe
 
 To run test
 
+- build database form `db/test-init.sql` and `db/test-data.sql`  
+- run tests with
 ```
-stack test
+POSTGRES_CONN=postgresql://librarytest@localhost/librarytest stack test
 ```
