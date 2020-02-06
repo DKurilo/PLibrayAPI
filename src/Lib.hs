@@ -33,6 +33,8 @@ import           Network.Wai
 import           Network.Wai.Handler.Warp
 import           Network.Wai.Handler.WarpTLS
 import           Servant
+import           Servant.Server.Experimental.Auth (AuthHandler, AuthServerData,
+                                                   mkAuthHandler)
 import           System.Environment               (lookupEnv)
 import           Types
 
@@ -56,7 +58,7 @@ startApp = do
           warpOpts = setPort 8080 defaultSettings
 
 app :: Pool Connection -> Application
-app pool = serve api (server pool)
+app pool = serveWithContext api (genAuthServerContext pool) (server pool)
 
 api :: Proxy API
 api = Proxy
@@ -67,8 +69,8 @@ server conns = health
           :<|> deleteBook conns
           :<|> overdueBooks conns
 
-createBook :: Pool Connection -> PostBook -> Handler Book
-createBook conns (PostBook postISBN) = case postISBN of
+createBook :: Pool Connection -> AuthLibrarian -> PostBook -> Handler Book
+createBook conns _ (PostBook postISBN) = case postISBN of
     WrongISBN -> throwError wrongISBN400Err
     _ -> do
             rows <- liftIO $ withResource conns $ \conn -> query conn [sql|
@@ -82,8 +84,8 @@ createBook conns (PostBook postISBN) = case postISBN of
     where wrongISBN400Err = err400 { errBody = "Wrong ISBN" }
           db500Err = err500 { errBody = "Failed to create book" }
 
-deleteBook :: Pool Connection -> PostBook -> Handler Int
-deleteBook conns (PostBook postISBN) = case postISBN of
+deleteBook :: Pool Connection -> AuthLibrarian -> PostBook -> Handler Int
+deleteBook conns _ (PostBook postISBN) = case postISBN of
     WrongISBN -> throwError wrongISBN400Err
     _ -> do
             rows <- liftIO $ withResource conns $ \conn -> query conn [sql|
@@ -97,8 +99,8 @@ deleteBook conns (PostBook postISBN) = case postISBN of
     where wrongISBN400Err = err400 { errBody = "Wrong ISBN" }
           db404Err = err500 { errBody = "Can't delete book" }
 
-overdueBooks :: Pool Connection -> Handler [OverdueBook]
-overdueBooks conns = do
+overdueBooks :: Pool Connection -> AuthLibrarian -> Handler [OverdueBook]
+overdueBooks conns _ = do
     rows <- liftIO $ withResource conns $ \conn -> query_ conn [sql|
                 SELECT book.book_id,
                        book.ISBN,
@@ -113,3 +115,32 @@ overdueBooks conns = do
 
 health :: Handler String
 health = liftIO $ show . (round . (* 1000)) <$> getPOSIXTime
+
+lookupAuthUser :: Pool Connection -> ByteString -> Handler AuthUser
+lookupAuthUser conns key = do
+            rows <- liftIO $ withResource conns $ \conn -> query conn [sql|
+                SELECT user_id FROM account
+                WHERE token = ? AND role = 'user'
+                |] (Only key)
+            case rows of
+                []           -> throwError (err403 { errBody = "Invalid Token" })
+                Only uid : _ -> return $ AuthUser uid
+
+lookupAuthLibrarian :: Pool Connection -> ByteString -> Handler AuthLibrarian
+lookupAuthLibrarian conns key = do
+            rows <- liftIO $ withResource conns $ \conn -> query conn [sql|
+                SELECT user_id FROM account
+                WHERE token = ? AND role = 'librarian'
+                |] (Only key)
+            case rows of
+                []           -> throwError (err403 { errBody = "Invalid Token" })
+                Only uid : _ -> return $ AuthLibrarian uid
+
+authHandler :: Pool Connection -> (Pool Connection -> ByteString -> Handler a) -> AuthHandler Request a
+authHandler conns check = mkAuthHandler handler
+  where maybeToEither e = maybe (Left e) Right
+        throw401 msg = throwError $ err401 { errBody = msg }
+        handler req = either throw401 (check conns) $ maybeToEither "Missing Auth-Token header" $ lookup "Auth-Token" $ requestHeaders req
+
+genAuthServerContext :: Pool Connection -> Context (AuthHandler Request AuthUser ': AuthHandler Request AuthLibrarian ': '[])
+genAuthServerContext conns = authHandler conns lookupAuthUser :. authHandler conns lookupAuthLibrarian :. EmptyContext

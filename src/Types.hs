@@ -6,6 +6,7 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE StrictData          #-}
 {-# LANGUAGE TemplateHaskell     #-}
+{-# LANGUAGE TypeFamilies        #-}
 {-# LANGUAGE TypeOperators       #-}
 module Types
     ( DBConnectionString (..)
@@ -16,17 +17,21 @@ module Types
     , Book (..)
     , BookId (..)
     , API (..)
+    , AuthUser (..)
+    , AuthLibrarian (..)
     ) where
 
 import           Control.Monad
 import           Data.Aeson
 import           Data.Aeson.TH
-import           Data.Aeson.Types   (Parser)
-import           Data.ByteString    (ByteString)
-import           Data.Char          (isDigit)
-import           Data.Text          (Text, pack, unpack)
-import           Data.Text.Encoding (encodeUtf8)
+import           Data.Aeson.Types                 (Parser)
+import           Data.ByteString                  (ByteString)
+import           Data.Char                        (isDigit)
+import           Data.Text                        (Text, pack, unpack)
+import           Data.Text.Encoding               (encodeUtf8)
 import           Servant
+import           Servant.Server.Experimental.Auth (AuthHandler, AuthServerData,
+                                                   mkAuthHandler)
 
 type DBConnectionString = ByteString
 
@@ -87,7 +92,12 @@ instance ToJSON OverdueBook where
 
 type BookId = Int
 
+newtype AuthUser = AuthUser { unAuthUser :: Int }
+type instance AuthServerData (AuthProtect "user") = AuthUser
+newtype AuthLibrarian = AuthLibrarian { unAuthLibrarian :: Int }
+type instance AuthServerData (AuthProtect "librarian") = AuthLibrarian
+
 type API = "api" :> "v1" :> "health" :> Get '[JSON] String
-      :<|> "api" :> "v1" :> "librarian" :> "books" :> ReqBody '[JSON] PostBook :> PostCreated '[JSON] Book
-      :<|> "api" :> "v1" :> "librarian" :> "books" :> ReqBody '[JSON] PostBook :> DeleteAccepted '[JSON] BookId
-      :<|> "api" :> "v1" :> "librarian" :> "books" :> "overdue" :> Get '[JSON] [OverdueBook]
+      :<|> "api" :> "v1" :> "librarian" :> "books" :> AuthProtect "librarian" :> ReqBody '[JSON] PostBook :> PostCreated '[JSON] Book
+      :<|> "api" :> "v1" :> "librarian" :> "books" :> AuthProtect "librarian" :> ReqBody '[JSON] PostBook :> DeleteAccepted '[JSON] BookId
+      :<|> "api" :> "v1" :> "librarian" :> "books" :> "overdue" :> AuthProtect "librarian" :> Get '[JSON] [OverdueBook]
