@@ -37,10 +37,10 @@ import           Servant.Server.Experimental.Auth (AuthHandler, AuthServerData,
 
 type DBConnectionString = ByteString
 
-data ISBN = WrongISBN | ISBN10 String | ISBN13 String deriving (Eq)
+data ISBN = WrongISBN | ISBN13 String deriving (Eq)
 
 isbnFromString :: String -> ISBN
-isbnFromString cs | l == 10 && checkSum10ISBN cs' = ISBN10 cs'
+isbnFromString cs | l == 10 && checkSum10ISBN cs' = (ISBN13 . isbn10To13) cs'
                   | l == 13 && checkSum13ISBN cs' = ISBN13 cs'
                   | otherwise = WrongISBN
     where cs' = filter isDigit cs
@@ -50,12 +50,17 @@ checkSum10ISBN :: String -> Bool
 checkSum10ISBN = (==0) . (`mod` 11) . foldr (\(i, c) s -> (11 - i) * (read [c] :: Int) + s) 0 . zip [1..10] . filter isDigit
 
 checkSum13ISBN :: String -> Bool
-checkSum13ISBN = (==0) . (`mod` 10) . foldr (\(i, c) s -> i * (read [c] :: Int) + s) 0 . zip oneThree . filter isDigit
-    where oneThree = join $ repeat [1,3]
+checkSum13ISBN = (==0) . getSumFor13
+
+getSumFor13 = (`mod` 10) . foldr (\(i, c) s -> i * (read [c] :: Int) + s) 0 . zip oneThree . filter isDigit
+oneThree = join $ repeat [1,3]
 
 isbnToString :: ISBN -> String
 isbnToString (ISBN13 cs) = cs
-isbnToString (ISBN10 cs) = cs
+
+isbn10To13 :: String -> String
+isbn10To13 cs = cs' ++ (show . (\d -> if d == 0 then 0 else 10 - d) . getSumFor13) cs'
+    where cs' = "978" ++ take 9 cs
 
 instance Show ISBN where
     show = isbnToString
@@ -66,7 +71,6 @@ instance FromJSON ISBN where
 
 instance ToJSON ISBN where
   toJSON (ISBN13 cs) = toJSON . pack $ cs
-  toJSON (ISBN10 cs) = toJSON . pack $ cs
   toJSON WrongISBN   = toJSON ("" :: Text)
 
 newtype PostBook = PostBook ISBN

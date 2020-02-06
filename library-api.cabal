@@ -58,4 +58,4 @@ test-suite library-api-test
 
 source-repository head
   type:     git
-  location: https://github.com/DKurilo/library-api
+  location: https://github.com/DKurilo/PLibrayAPI
