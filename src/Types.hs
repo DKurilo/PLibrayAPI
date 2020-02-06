@@ -40,8 +40,8 @@ type DBConnectionString = ByteString
 data ISBN = WrongISBN | ISBN10 String | ISBN13 String deriving (Eq)
 
 isbnFromString :: String -> ISBN
-isbnFromString cs | l == 10 && checkSum10ISBN cs' = ISBN10 cs
-                  | l == 13 && checkSum13ISBN cs' = ISBN13 cs
+isbnFromString cs | l == 10 && checkSum10ISBN cs' = ISBN10 cs'
+                  | l == 13 && checkSum13ISBN cs' = ISBN13 cs'
                   | otherwise = WrongISBN
     where cs' = filter isDigit cs
           l = length cs'

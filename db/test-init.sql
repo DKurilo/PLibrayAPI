@@ -1,0 +1,4 @@
+CREATE USER librarytest WITH PASSWORD NULL;
+DROP DATABASE IF EXISTS librarytest;
+CREATE DATABASE librarytest WITH OWNER=librarytest;
+
