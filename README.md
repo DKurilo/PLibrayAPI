@@ -1,4 +1,6 @@
-# Library API
+# Library API 
+
+[![Build Status](https://travis-ci.org/DKurilo/PLibrayAPI.svg?branch=master)](https://travis-ci.org/DKurilo/PLibrayAPI)  
 
 ## Task
 
