@@ -19,7 +19,6 @@ jobs:
   include:
   - stage: Install Stack
     script:
-    - echo "$DOCKER_PASSWORD" | docker login --username $DOCKER_USERNAME --password-stdin
     - export DIR=~/.local/bin
     - if [ ! -d "$DIR" ]; then mkdir -p ~/.local/bin; fi
     - export PATH=$HOME/.local/bin:$PATH
