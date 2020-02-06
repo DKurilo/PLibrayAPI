@@ -26,8 +26,8 @@ import           Data.Text                        (Text, pack, unpack)
 import           Data.Text.Encoding               (encodeUtf8)
 import           Data.Time.Clock.POSIX            (getPOSIXTime)
 import           Database.PostgreSQL.Simple       (Connection, Only (..), close,
-                                                   connectPostgreSQL, execute,
-                                                   execute_, query)
+                                                   connectPostgreSQL, fromOnly,
+                                                   query, query_)
 import           Database.PostgreSQL.Simple.SqlQQ (sql)
 import           Network.Wai
 import           Network.Wai.Handler.Warp
@@ -89,11 +89,25 @@ data Book = Book { id   :: Int
 
 $(deriveJSON defaultOptions ''Book)
 
+data OverdueBook = OverdueBook { obid   :: Int
+                               , obisbn :: ISBN
+                               , obdays :: Int
+                               , obuser :: Int
+                               }
+
+instance ToJSON OverdueBook where
+    toJSON ob = object [ "id" .= (show . obid) ob
+                       , "isbn" .= (show . obisbn) ob
+                       , "daysOverdue" .= (show . obdays) ob
+                       , "user" .= (show . obuser) ob
+                       ]
+
 type BookId = Int
 
 type API = "api" :> "v1" :> "health" :> Get '[JSON] String
       :<|> "api" :> "v1" :> "librarian" :> "books" :> ReqBody '[JSON] PostBook :> PostCreated '[JSON] Book
       :<|> "api" :> "v1" :> "librarian" :> "books" :> ReqBody '[JSON] PostBook :> DeleteAccepted '[JSON] BookId
+      :<|> "api" :> "v1" :> "librarian" :> "books" :> "overdue" :> Get '[JSON] [OverdueBook]
 
 startApp :: IO ()
 startApp = do
@@ -116,6 +130,7 @@ server :: Pool Connection -> Server API
 server conns = health
           :<|> createBook conns
           :<|> deleteBook conns
+          :<|> overdueBooks conns
 
 createBook :: Pool Connection -> PostBook -> Handler Book
 createBook conns (PostBook postISBN) = case postISBN of
@@ -146,6 +161,20 @@ deleteBook conns (PostBook postISBN) = case postISBN of
                 Only uid : _ -> return uid
     where wrongISBN400Err = err400 { errBody = "Wrong ISBN" }
           db404Err = err500 { errBody = "Can't delete book" }
+
+overdueBooks :: Pool Connection -> Handler [OverdueBook]
+overdueBooks conns = do
+    rows <- liftIO $ withResource conns $ \conn -> query_ conn [sql|
+                SELECT book.book_id,
+                       book.ISBN,
+                       EXTRACT(epoch from date_trunc('day', now()) - date_trunc('day', account_book.end_date)) / 3600 / 24,
+                       account_book.user_id
+                FROM  account_book
+                INNER JOIN book
+                ON account_book.book_id = book.book_id
+                WHERE date_trunc('day', now()) > date_trunc('day', account_book.end_date)
+                |]
+    return $ map (\(bid, bookISBN, days, uid) -> OverdueBook bid (isbnFromString bookISBN) days uid) rows
 
 health :: Handler String
 health = liftIO $ show . (round . (* 1000)) <$> getPOSIXTime

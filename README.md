@@ -52,3 +52,4 @@ term
 curl -X GET "https://127.0.0.1:8080/api/v1/health" -H "Content-Type: application/json" -k -v  
 curl -X POST "https://127.0.0.1:8080/api/v1/librarian/books" -H "Content-Type: application/json" --data-binary '"0-306-40615-2"' -k -v  
 curl -X DELETE "https://127.0.0.1:8080/api/v1/librarian/books" -H "Content-Type: application/json" --data-binary '"0-306-40615-2"' -k -v  
+curl -X GET "https://127.0.0.1:8080/api/v1/librarian/books/overdue" -H "Content-Type: application/json" -k -v  

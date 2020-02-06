@@ -37,15 +37,11 @@ jobs:
     script:
     - export PATH=$HOME/.local/bin:$PATH
     - stack test
-  - stage: Build Docker image
+  - stage: Build and Push Docker image
     script:
     - stack build --local-bin-path ./deploy/bin/ --copy-bins
     - cd ./deploy
     - docker build -t dkurilo/library-api .
-    on:
-      branch: master
-  - stage: Push Docker Image
-    provider: script
-    script: bash ./deploy/docker_push
+    - ./docker_push
     on:
       branch: master

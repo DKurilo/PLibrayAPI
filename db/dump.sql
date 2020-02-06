@@ -40,7 +40,7 @@ ALTER TABLE public.account OWNER TO library;
 CREATE TABLE public.account_book (
     user_id integer NOT NULL,
     book_id integer NOT NULL,
-    check_data timestamp without time zone,
+    check_date timestamp without time zone,
     end_date timestamp without time zone
 );
 
@@ -104,7 +104,7 @@ COPY public.account (user_id, role, token) FROM stdin;
 -- Data for Name: account_book; Type: TABLE DATA; Schema: public; Owner: library
 --
 
-COPY public.account_book (user_id, book_id, check_data, end_date) FROM stdin;
+COPY public.account_book (user_id, book_id, check_date, end_date) FROM stdin;
 \.
 
 
@@ -113,6 +113,8 @@ COPY public.account_book (user_id, book_id, check_data, end_date) FROM stdin;
 --
 
 COPY public.book (book_id, isbn) FROM stdin;
+2	0-306-40615-2
+3	1-306-40615-3
 \.
 
 
@@ -120,7 +122,7 @@ COPY public.book (book_id, isbn) FROM stdin;
 -- Name: book_book_id_seq; Type: SEQUENCE SET; Schema: public; Owner: library
 --
 
-SELECT pg_catalog.setval('public.book_book_id_seq', 1, false);
+SELECT pg_catalog.setval('public.book_book_id_seq', 3, true);
 
 
 --
