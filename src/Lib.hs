@@ -100,7 +100,7 @@ deleteBook conns _ (PostBook postISBN) = case postISBN of
                 []           -> throwError db404Err
                 Only bid : _ -> return bid
     where wrongISBN400Err = err400 { errBody = "Wrong ISBN" }
-          db404Err = err500 { errBody = "Can't delete book" }
+          db404Err = err404 { errBody = "Can't delete book" }
 
 overdueBooks :: Pool Connection -> AuthLibrarian -> Handler [OverdueBook]
 overdueBooks conns _ = do
@@ -201,7 +201,7 @@ returnBook conns au (PostBook postISBN) = case postISBN of
                 []           -> throwError db404Err
                 Only bid : _ -> return bid
     where wrongISBN400Err = err400 { errBody = "Wrong ISBN" }
-          db404Err = err500 { errBody = "Can't delete book" }
+          db404Err = err500 { errBody = "Can't return book" }
 
 health :: Handler String
 health = liftIO $ show . (round . (* 1000)) <$> getPOSIXTime

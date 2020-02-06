@@ -73,11 +73,14 @@ newtype PostBook = PostBook ISBN
 
 $(deriveJSON defaultOptions ''PostBook)
 
-data Book = Book { id   :: Int
-                 , isbn :: ISBN
+data Book = Book { bid   :: Int
+                 , bisbn :: ISBN
                  }
 
-$(deriveJSON defaultOptions ''Book)
+instance ToJSON Book where
+    toJSON b = object [ "bookId" .= (show . bid) b
+                      , "isbn" .= (show . bisbn) b
+                      ]
 
 data OverdueBook = OverdueBook { obid   :: Int
                                , obisbn :: ISBN
@@ -86,7 +89,7 @@ data OverdueBook = OverdueBook { obid   :: Int
                                }
 
 instance ToJSON OverdueBook where
-    toJSON ob = object [ "id" .= (show . obid) ob
+    toJSON ob = object [ "bookId" .= (show . obid) ob
                        , "isbn" .= (show . obisbn) ob
                        , "daysOverdue" .= (show . obdays) ob
                        , "user" .= (show . obuser) ob
@@ -100,7 +103,7 @@ data CheckedOutBook = CheckedOutBook { cobid       :: Int
                                      }
 
 instance ToJSON CheckedOutBook where
-    toJSON ob = object [ "id" .= (show . cobid) ob
+    toJSON ob = object [ "bookId" .= (show . cobid) ob
                        , "isbn" .= (show . cobisbn) ob
                        , "checkoutDate" .= (show . cobcodate) ob
                        , "endDate" .= (show . cobedate) ob
