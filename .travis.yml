@@ -29,7 +29,7 @@ jobs:
   include:
   - stage: Install Stack
     script:
-    - stack setup
+    - stack setup --reinstall
   - stage: Build dependencies
     script:
     - export PATH=$HOME/.local/bin:$PATH
