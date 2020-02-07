@@ -1,10 +1,8 @@
 dist: bionic
-language: haskell
-ghc:
-  - "8.6.5"
 services:
-- docker
-- postgresql
+  - docker
+  - postgresql
+sudo: false
 cache:
   directories:
   - "$HOME/.local/bin"
@@ -17,21 +15,20 @@ addons:
     - libgmp-dev
 env:
   global:
+  - DIR=~/.local/bin
   - POSTGRES_CONN=postgresql://librarytest@localhost/librarytest
   - secure: A/HOk2cf41esSvx77b0+/jJ6A9bonVraMxIBpWM5ndniS+mLxREi2+XFOlCJP/IPIKwI02/TdKXfoNQImKvkMlHfF1mpVG86268kgJ8fOxWIT1W9pO8j1gb52GsTWAdha7EWpKfvi8Xt5uaqm+v0KVJKr5LZq4m0A7gUN4CgvYNVkCMZeppiHCmNWJ3cJ7EftkXkd1AbiyzvHsNMfPqkH1CMwcMAwPjNMbyu7IQXQkzEVFnVMVYtJxS2vThHIJn/WigiugE0iMjTqNqyvUFXNhn2IxWjw0kWADXHPrvJFe1ueQfgx62GvStFdNqr8DSWtdeiH1/+5f5QaE7z1Bweh6UseD9WnTmkmTbLRvTssmWxq3z9TkQfPWdDc8ZisKz5rCHLnInZTesj0IEmDlEuA7McPtMbjuIjqYADe7/3PCqwmylewKxyooYGbu4uDN5AyPaU5PPftB6+KfGzjm4SvXiFaoPxYCk4QVQuPnm3atieXrBGLNAUQL6StryvBSFI9F+Yc35lpl7YOqoeAkBKI1XjlAL4FfSHXbNQkuRZ3tD7tVXTmrj2JvQ3+BWu2P7OYGnxLdLXW58d7qpYDZDRc1UilsvgVL+akJ95Zz//UzwxJnqJFKTfiDFIhaert5Lc/gARHVE/5o6zeNFiTPdrnmar4Q2A2uxbeCff/Atc0KU=
   - secure: AlLlvtAto2bjOgngh879hDyY1MexR+zQyW+pOop5UqSGyVwv4Vp9rFJmslf68zlqUZqr1v7QF9S7oKEzarzHR0yVJWOl1Dk7rhg1UVKM11vLcVQ4iA7cBCI/Ci/akdEmumDVuGJobBCBG2LKESoR7RFrn6VZn2Cm/PGYnCmV8QRjVLFZ9n4y/y1AAqzeR28D5yBhvDYe3F48mRLI+E7a+rBy5nq/Ip7F/gUPtK2R0cf6dLbOH2x8k+WjfRr0DUj1+wPU+k+7nX7YZ/o3uDXQSvkHFop9RZSOTD/8fxYv2+5hAE0CYZQMdt4Fm9AjZ76ncG4zpGamsKe3Ew93Ljn02mlNC5NFNeQuoH/xLSCfTmVxC0AveLfBYbua9J9tpfzU7KGiQa4XtRR1rCtbkBOdxrk4nehHFrku5nsHEfm5OG92UQmT8F6V5WLmsoFOOLdLw/NLqWoN5RuPUaytLSGV0c9YT0cU1mU5ldYsn/CtQHcXhZDAZs4rSikMv2zJX76zZteYtczXpwd1ndiS3L3fQFGQdniegWqvYwrMm5cZflMqZUM7fFBmb/a+Qxy64wKm6nMXiu7gWYZ4ujVhz5DoqBfxIZWbX3+U3KujzfoVmhlpd4rxarR8s308h8qVx4l24HoNyboIyWkGw73R63F4knPCaK5YAkRl4RNrHkxFwJY=
 before_script:
   - psql -U postgres -d postgres -a -f db/test-init.sql
   - psql -U librarytest -d librarytest -f db/test-data.sql
+  - if [ ! -d "$DIR" ]; then mkdir -p ~/.local/bin; fi
+  - export PATH=$HOME/.local/bin:$PATH
+  - travis_retry curl -L https://get.haskellstack.org/stable/linux-x86_64.tar.gz | tar xz --wildcards --strip-components=1 -C ~/.local/bin '*/stack'
 jobs:
   include:
   - stage: Install Stack
     script:
-    - export DIR=~/.local/bin
-    - if [ ! -d "$DIR" ]; then mkdir -p ~/.local/bin; fi
-    - export PATH=$HOME/.local/bin:$PATH
-    - travis_retry curl -L https://get.haskellstack.org/stable/linux-x86_64.tar.gz
-      | tar xz --wildcards --strip-components=1 -C ~/.local/bin '*/stack'
     - stack setup
   - stage: Build dependencies
     script:
